@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор паролей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .checkbox-group input {
+            margin-right: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+        .password {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+            display: none;
+        }
+        .length-info {
+            color: #6c757d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        input:invalid {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Генератор паролей</h1>
+
+        <div class="form-group">
+            <label for="length">Длина пароля (4-50 символов):</label>
+            <input type="number" id="length" min="4" max="50" value="12" required>
+            <div class="length-info">Минимум: 4 символа, Максимум: 50 символов</div>
+        </div>
+
+        <div class="checkbox-group">
+            <label>
+                <input type="checkbox" id="uppercase" checked>
+                Заглавные буквы (A-Z)
+            </label>
+            <label>
+                <input type="checkbox" id="numbers" checked>
+                Цифры (0-9)
+            </label>
+            <label>
+                <input type="checkbox" id="special">
+                Спецсимволы (!@#$%)
+            </label>
+        </div>
+
+        <button onclick="generatePassword()">Сгенерировать пароль</button>
+
+        <div id="result" class="result" style="display: none;">
+            <strong>Ваш пароль:</strong>
+            <div id="password" class="password"></div>
+            <button onclick="copyPassword()" style="margin-top: 10px; background-color: #28a745;">
+                Копировать
+            </button>
+        </div>
+
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        function validateLength() {
+            const lengthInput = document.getElementById('length');
+            let value = parseInt(lengthInput.value);
+
+            if (value < 4) {
+                lengthInput.value = 4;
+            } else if (value > 50) {
+                lengthInput.value = 50;
+            }
+        }
+
+        async function generatePassword() {
+            // Валидация перед отправкой
+            validateLength();
+
+            const length = document.getElementById('length').value;
+            const uppercase = document.getElementById('uppercase').checked;
+            const numbers = document.getElementById('numbers').checked;
+            const special = document.getElementById('special').checked;
+
+            // Клиентская проверка
+            if (length < 4 || length > 50) {
+                showError('Длина пароля должна быть от 4 до 50 символов');
+                return;
+            }
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        length: parseInt(length),
+                        uppercase: uppercase,
+                        numbers: numbers,
+                        special: special
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('password').textContent = data.password;
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('error').style.display = 'none';
+                } else {
+                    showError(data.error);
+                }
+            } catch (error) {
+                showError('Ошибка соединения с сервером');
+            }
+        }
+
+        function copyPassword() {
+            const password = document.getElementById('password').textContent;
+            navigator.clipboard.writeText(password).then(() => {
+                alert('Пароль скопирован в буфер обмена!');
+            });
+        }
+
+        function showError(message) {
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+        }
+
+        // Добавляем обработчики событий для валидации
+        document.getElementById('length').addEventListener('change', validateLength);
+        document.getElementById('length').addEventListener('input', validateLength);
+    </script>
+</body>
+</html>
