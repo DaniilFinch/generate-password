@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Главная</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .flash {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        nav {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .welcome {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>Добро пожаловать, {{ username }}!</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <nav>
+        <a href="{{ url_for('profile') }}">Профиль</a>
+        <a href="{{ url_for('password_generator') }}">Генератор паролей</a>
+        {% if session.get('role') == 'admin' %}
+            <a href="{{ url_for('admin') }}">Админка</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Выйти</a>
+    </nav>
+
+    <div class="welcome">
+        <h1>Добро пожаловать в систему!</h1>
+        <p>Используйте навигацию выше для перехода между разделами.</p>
+        <p>Для генерации паролей перейдите в раздел <strong>"Генератор паролей"</strong>.</p>
+    </div>
+</body>
+</html>
