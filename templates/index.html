@@ -65,7 +65,7 @@
     {% endwith %}
 
     <nav>
-        <a href="{{ url_for('profile') }}">Профиль</a>
+        <a href="{{ url_for('managerpassword') }}">Менеджер паролей</a>
         <a href="{{ url_for('password_generator') }}">Генератор паролей</a>
         {% if session.get('role') == 'admin' %}
             <a href="{{ url_for('admin') }}">Админка</a>
@@ -74,7 +74,7 @@
     </nav>
 
     <div class="welcome">
-        <h1>Добро пожаловать в систему!</h1>
+        <h1>Список ваших сайтов</h1>
         <p>Используйте навигацию выше для перехода между разделами.</p>
         <p>Для генерации паролей перейдите в раздел <strong>"Генератор паролей"</strong>.</p>
     </div>
