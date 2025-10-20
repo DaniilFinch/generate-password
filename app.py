@@ -200,15 +200,7 @@ def managerpassword():
 
         if site_name and site_login and site_password:
             sites = read_sites_from_file()
-            for site in sites:
 
-                if site['login'] == site_login:
-                    flash('Сайт с таким логином уже существует!', 'error')
-                    return redirect(url_for('managerpassword'))
-
-                if site['password'] == site_password:
-                    flash('Сайт с таким паролем уже существует!', 'error')
-                    return redirect(url_for('managerpassword'))
 
             site_data = {
                 'name': site_name,
