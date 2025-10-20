@@ -200,7 +200,15 @@ def managerpassword():
 
         if site_name and site_login and site_password:
             sites = read_sites_from_file()
+            for site in sites:
 
+                if site['login'] == site_login:
+                    flash('Сайт с таким логином уже существует!', 'error')
+                    return redirect(url_for('managerpassword'))
+
+                if site['password'] == site_password:
+                    flash('Сайт с таким паролем уже существует!', 'error')
+                    return redirect(url_for('managerpassword'))
 
             site_data = {
                 'name': site_name,
@@ -301,14 +309,6 @@ def profile():
                            username=session.get('username'),
                            role=session.get('role'))
 
-
-@app.route('/admin')
-@login_required
-def admin():
-    if session.get('role') != 'admin':
-        flash('У вас нет прав для доступа к этой странице', 'error')
-        return redirect(url_for('index'))
-    return render_template('admin.html', username=session.get('username'))
 
 
 if __name__ == '__main__':

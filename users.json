@@ -18,5 +18,20 @@
     "username": "Саша",
     "password": "1234",
     "role": "user"
+  },
+  {
+    "username": "1234",
+    "password": "1234",
+    "role": "user"
+  },
+  {
+    "username": "12344444444",
+    "password": "1234",
+    "role": "user"
+  },
+  {
+    "username": "123",
+    "password": "123123",
+    "role": "user"
   }
 ]
