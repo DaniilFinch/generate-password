@@ -188,6 +188,111 @@ def password_generator():
     return render_template('password_generator.html', username=session.get('username'))
 
 
+@app.route('/managerpassword', methods=['GET', 'POST'])
+@login_required
+def managerpassword():
+    username = session.get('username')
+
+    if request.method == 'POST':
+        site_name = request.form.get('site_name', '').strip()
+        site_login = request.form.get('site_login', '').strip()
+        site_password = request.form.get('site_password', '').strip()
+
+        if site_name and site_login and site_password:
+            sites = read_sites_from_file()
+
+
+            site_data = {
+                'name': site_name,
+                'login': site_login,
+                'password': site_password
+            }
+
+            if add_site_to_file(site_data):
+                flash('Сайт успешно сохранен!', 'success')
+            else:
+                flash('Ошибка при сохранении сайта!', 'error')
+
+            return redirect(url_for('managerpassword'))
+        else:
+            flash('Заполните все поля!', 'error')
+
+    sites = read_sites_from_file()
+    return render_template('managerpassword.html',
+                           username=username,
+                           sites=sites)
+
+
+@app.route('/delete-site', methods=['POST'])
+@login_required
+def delete_site():
+    site_name = request.form.get('site_name', '').strip()
+
+    if site_name:
+        try:
+            sites = read_sites_from_file()
+            site_exists = any(site['name'] == site_name for site in sites)
+
+            if not site_exists:
+                flash('Сайт с таким названием не найден!', 'error')
+                return redirect(url_for('managerpassword'))
+
+            # Если сайт существует, удаляем его
+            new_sites = [s for s in sites if s['name'] != site_name]
+
+            # Перезаписываем файл
+            with open('sites.txt', 'w', encoding='utf-8') as file:
+                for site in new_sites:
+                    line = f"Сайт: {site['name']} | Логин: {site['login']} | Пароль: {site['password']}\n"
+                    file.write(line)
+
+            flash('Сайт успешно удален!', 'success')
+
+        except Exception as e:
+            flash(f'Ошибка при удалении: {str(e)}', 'error')
+    else:
+        flash('Введите название сайта для удаления!', 'error')
+
+    return redirect(url_for('managerpassword'))
+
+
+def read_sites_from_file():
+    sites = []
+    try:
+        if os.path.exists('sites.txt'):
+            with open('sites.txt', 'r', encoding='utf-8') as file:
+                for line in file:
+                    line = line.strip()
+                    if line:
+                        # Парсим строку
+                        parts = line.split(' | ')
+                        site_info = {}
+                        for part in parts:
+                            if 'Сайт: ' in part:
+                                site_info['name'] = part.replace('Сайт: ', '')
+                            elif 'Логин: ' in part:
+                                site_info['login'] = part.replace('Логин: ', '')
+                            elif 'Пароль: ' in part:
+                                site_info['password'] = part.replace('Пароль: ', '')
+                        sites.append(site_info)
+    except Exception as e:
+        print(f"Ошибка при чтении файла: {e}")
+
+    return sites
+
+
+def add_site_to_file(site_data):
+    try:
+        # Форматируем данные для записи
+        formatted_data = f"Сайт: {site_data['name']} | Логин: {site_data['login']} | Пароль: {site_data['password']}"
+
+        with open('sites.txt', 'a', encoding='utf-8') as file:
+            file.write(formatted_data + '\n')
+        return True
+    except Exception as e:
+        print(f"Ошибка при записи в файл: {e}")
+        return False
+
 # Дополнительные защищенные маршруты (пример)
 @app.route('/profile')
 @login_required
