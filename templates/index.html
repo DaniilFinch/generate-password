@@ -14,6 +14,11 @@
             margin: 10px 0;
             border-radius: 4px;
         }
+        .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 1rem;
+        text-align: center;
+        }
         .success {
             background-color: #d4edda;
             color: #155724;
@@ -43,14 +48,6 @@
         nav a:hover {
             text-decoration: underline;
         }
-        .welcome {
-            margin-top: 30px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -67,16 +64,11 @@
     <nav>
         <a href="{{ url_for('managerpassword') }}">Менеджер паролей</a>
         <a href="{{ url_for('password_generator') }}">Генератор паролей</a>
-        {% if session.get('role') == 'admin' %}
-            <a href="{{ url_for('admin') }}">Админка</a>
-        {% endif %}
         <a href="{{ url_for('logout') }}">Выйти</a>
     </nav>
 
-    <div class="welcome">
-        <h1>Список ваших сайтов</h1>
-        <p>Используйте навигацию выше для перехода между разделами.</p>
-        <p>Для генерации паролей перейдите в раздел <strong>"Генератор паролей"</strong>.</p>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Дюпин, Костюк. Все права защищены.</p>
     </div>
 </body>
 </html>
