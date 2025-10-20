@@ -13,4 +13,4 @@
     pip install -r requirements.txt
 Запустите приложение:
 -
-    python app.py
+    py app.py
